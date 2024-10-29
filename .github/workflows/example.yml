@@ -15,6 +15,7 @@ defaults:
 
 jobs:
   print:
+    timeout-minutes: 1
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment-name }}
     env:
