@@ -1,0 +1,26 @@
+name: Environments
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment-name:
+        type: environment
+        default: test
+        required: false
+        description: Environment name
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  print:
+    timeout-minutes: 1
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment-name }}
+    env:
+      USERNAME: ${{ vars.USERNAME }}
+      PASSWORD: ${{ secrets.PASSWORD }}
+    steps:
+      - run: echo "${USERNAME}"
+      - run: echo "${PASSWORD:0:1} ${PASSWORD#?}"
