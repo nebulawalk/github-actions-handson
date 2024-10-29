@@ -12,6 +12,10 @@ jobs:
 
     steps:
       - run: |
+          echo "::group::Show environment variables"
+          printenv
+          echo "::endgroup::"
+      - run: |
           set -x
           date
           hostname
