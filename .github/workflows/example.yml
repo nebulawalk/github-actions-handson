@@ -1,26 +1,14 @@
-name: Environments
-
+name: Manual
 on:
   workflow_dispatch:
     inputs:
-      environment-name:
-        type: environment
-        default: test
-        required: false
-        description: Environment name
-
-defaults:
-  run:
-    shell: bash
-
+      greeting:
+        type: string
+        default: "Hello"
+        required: true
+        description: A cheerful word
 jobs:
-  print:
-    timeout-minutes: 1
+  run:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment-name }}
-    env:
-      USERNAME: ${{ vars.USERNAME }}
-      PASSWORD: ${{ secrets.PASSWORD }}
     steps:
-      - run: echo "${USERNAME}"
-      - run: echo "${PASSWORD:0:1} ${PASSWORD#?}"
+      - run: echo "${{ inputs.greeting }}"
