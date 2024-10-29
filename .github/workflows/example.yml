@@ -1,6 +1,13 @@
-name: Debug log
+name: Environments
 
-on: [push]
+on:
+  workflow_dispatch:
+    inputs:
+      environment-name:
+        type: environment
+        default: test
+        required: false
+        description: Environment name
 
 defaults:
   run:
@@ -8,13 +15,11 @@ defaults:
 
 jobs:
   print:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-        version: [18, 20]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment-name }}
+    env:
+      USERNAME: ${{ vars.USERNAME }}
+      PASSWORD: ${{ secrets.PASSWORD }}
     steps:
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.version }}
-      - run: echo "${RUNNER_OS}" && node --version
+      - run: echo "${USERNAME}"
+      - run: echo "${PASSWORD:0:1} ${PASSWORD#?}"
