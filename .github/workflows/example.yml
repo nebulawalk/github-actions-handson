@@ -2,6 +2,10 @@ name: Debug log
 
 on: [push]
 
+defaults:
+  run:
+    shell: bash
+
 env:
   ACTIONS_STEP_DEBUG: true
 
