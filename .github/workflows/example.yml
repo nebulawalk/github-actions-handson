@@ -11,5 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - run: |
+          set -x
+          date
+          hostname
       - run: echo "hello"
       - run: echo "::debug::Set the Octocat variable"
