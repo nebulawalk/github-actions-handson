@@ -25,3 +25,6 @@ jobs:
           hostname
       - run: echo "hello"
       - run: echo "::debug::Set the Octocat variable"
+      - run: echo "::error::This is an error"
+      - run: echo "::warning::This is a warning"
+      - run: echo "::notice::This is a notice"
