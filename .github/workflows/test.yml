@@ -3,7 +3,7 @@ name: Test
 on:
   pull_request:
     paths:
-      - 'go/**/*.go'
+      - "go/**/*.go"
 
 jobs:
   test:
@@ -14,9 +14,8 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23'
+          go-version: "1.23"
 
       - name: Run tests
         run: |
-          cd go
-          go test ./... -v
+          go test go/**/*.go -v
