@@ -1,7 +1,7 @@
 name: Environments
 
 on:
-  workflow_dispatch:
+  push:
     inputs:
       environment-name:
         type: environment
