@@ -9,12 +9,16 @@ defaults:
 jobs:
   log:
     runs-on: ubuntu-latest
-
+    env:
+      PASSWORD: SuperSecretValue
     steps:
       - run: |
           echo "::group::Show environment variables"
           printenv
           echo "::endgroup::"
+      - run: |
+          echo "::add-mask::${PASSWORD}"
+          echo "${PASSWORD}"
       - run: |
           set -x
           date
