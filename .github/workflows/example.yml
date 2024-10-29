@@ -7,28 +7,11 @@ defaults:
     shell: bash
 
 jobs:
-  log:
-    runs-on: ubuntu-latest
-    env:
-      PASSWORD: SuperSecretValue
+  print:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - run: |
-          echo "::group::Show environment variables"
-          printenv
-          echo "::endgroup::"
-      - run: |
-          echo "::add-mask::${PASSWORD}"
-          echo "${PASSWORD}"
-      - run: |
-          set -x
-          date
-          hostname
-      - run: echo "hello"
-      - run: echo "::debug::Set the Octocat variable"
-      - run: echo "::error::This is an error"
-      - run: echo "::warning::This is a warning"
-      - run: echo "::notice::This is a notice"
-      - run: |
-          echo "## Example Title :rocket:" >> "${GITHUB_STEP_SUMMARY}"
-          echo "- first line" >> "${GITHUB_STEP_SUMMARY}"
-          echo "- second line" >> "${GITHUB_STEP_SUMMARY}"
+      - run: echo "${RUNNER_OS}"
+        shell: bash
