@@ -12,8 +12,9 @@ permissions:
 
 jobs:
   dependabot-metadata:
-    runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
     outputs:
       update-type: ${{ steps.metadata.outputs.update-type }}
       package-ecosystem: ${{ steps.metadata.outputs.package-ecosystem }}
@@ -29,6 +30,7 @@ jobs:
     if: |
       needs.dependabot-metadata.outputs.package-ecosystem == 'npm'
     runs-on: ubuntu-latest
+    timeout-minutes: 1
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -47,13 +49,14 @@ jobs:
 
   auto-merge:
     needs: [dependabot-metadata, run-tests]
-    runs-on: ubuntu-latest
     if: |
       always() &&
       needs.dependabot-metadata.result == 'success' &&
       (needs.run-tests.result == 'success' || needs.run-tests.result == 'skipped') &&
       (needs.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' ||
        needs.dependabot-metadata.outputs.update-type == 'version-update:semver-minor')
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
     steps:
       - name: Enable auto-merge for Dependabot PRs
         env:
