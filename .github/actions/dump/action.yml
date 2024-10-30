@@ -15,7 +15,7 @@ outputs:
       出力した日時を返します。
     value: ${{ steps.current.outputs.date }}
 runs:
-  using: conposite
+  using: composite
   steps:
     - run: printenv | sort
       shell: bash
