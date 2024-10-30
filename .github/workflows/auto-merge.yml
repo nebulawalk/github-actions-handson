@@ -49,13 +49,16 @@ jobs:
     needs: [dependabot-metadata, run-tests]
     runs-on: ubuntu-latest
     if: |
-      needs.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' ||
-      needs.dependabot-metadata.outputs.update-type == 'version-update:semver-minor'
+      always() &&
+      needs.dependabot-metadata.result == 'success' &&
+      (needs.run-tests.result == 'success' || needs.run-tests.result == 'skipped') &&
+      (needs.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' ||
+       needs.dependabot-metadata.outputs.update-type == 'version-update:semver-minor')
     steps:
       - name: Enable auto-merge for Dependabot PRs
-        run: |
-          gh pr review --approve "$PR_URL"
-          gh pr merge --auto --merge "$PR_URL"
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr review --approve "${{ github.event.pull_request.number }}"
+          gh pr merge --auto --merge "${{ github.event.pull_request.number }}"
