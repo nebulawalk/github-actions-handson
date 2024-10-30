@@ -1,16 +1,61 @@
-name: Auto merge
-on: pull_request
+name: Dependabot Auto-merge
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
-  merge:
-    if: ${{ github.actor == 'dependabot[bot]' }}
+  dependabot-metadata:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    outputs:
+      update-type: ${{ steps.metadata.outputs.update-type }}
+      package-ecosystem: ${{ steps.metadata.outputs.package-ecosystem }}
     steps:
-      - uses: actions/checkout@v4
-      - run: |
-          gh pr review "${{ github.head_ref }}" --approve
-          gh pr merge "${{ github.head_ref }}" --merge --auto
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v1
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+  run-tests:
+    needs: dependabot-metadata
+    if: |
+      needs.dependabot-metadata.outputs.package-ecosystem == 'npm'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  auto-merge:
+    needs: [dependabot-metadata, run-tests]
+    runs-on: ubuntu-latest
+    if: |
+      needs.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' ||
+      needs.dependabot-metadata.outputs.update-type == 'version-update:semver-minor'
+    steps:
+      - name: Enable auto-merge for Dependabot PRs
+        run: |
+          gh pr review --approve "$PR_URL"
+          gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
